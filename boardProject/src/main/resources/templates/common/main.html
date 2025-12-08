@@ -26,7 +26,7 @@
         <!-- 로그인, 회원가입 버튼 -->
 
           <!-- 로그인이 되어있지 않은 경우 -->
-          <th:block th:if="${session.loginMember==null}">
+          <th:block th:if="${session.loginMember == null}">
           
             <!-- 로그인 박스 -->
             <form action="/member/login" method="POST" id="loginForm">
@@ -57,39 +57,39 @@
     
               <article class="signup-find-area">
 
-                <a href="#">회원가입</a>
+                <a href="/member/signup">회원가입</a>
 
                 <span> | </span>
                 <a href="#">ID/PW 찾기</a>
               </article>
     
             </form>
-            </th:block>
+          </th:block>
 
           <!-- 로그인이 되어있는 경우 -->
-          <!-- <th:block th:unless="${session.loginMember ==null}"></th:block> -->
-          <th:block th:if="${session.loginMember !=null}">
+          <!--<th:block th:unless="${session.loginMember == null}"></th:block> -->
+          <th:block th:if="${session.loginMember != null}">
             <article class="login-area">
 
               <a href="#">
                 <!-- 프로필 이미지 -->
-                <!-- messages.properties 에 작성된 기본 사용자 이미지 사용
-                 ->session.loginMember.profileImg에 유저가 등록한
-                   이미지 경로가 있다면 (==null 이 아니라면)
-                   session.loginMember.profileImg에 저장된 경로를 사용하겠다
-                   /없다면 (==null 이라면)
-                   /images/user.png(messages.properties에 user.default.image 등록)
-                -->
+                <!--
+                messages.properties 에 작성된 기본 사용자 이미지 사용
+                -> session.loginMember.profileImg에 유저가 등록한 
+                  이미지 경로가 있다면 (== null이 아니라면)
+                  session.loginMember.profileImg에 저장된 경로를 사용하겠다
+                -> 없다면 (== null 이라면) 
+                  /images/user.png(messages.properties에 
+                  user.default.image 등록) 사용
+                 -->
                 <img th:with="user=#{user.default.image}"
                 th:src="${session.loginMember.profileImg ?: user}"
-                
-
                      id="memberProfile"
                      alt="프로필 이미지" >
               </a>
 
               <!-- 닉네임, 이메일, 로그아웃 버튼 영역 -->
-              <div class="my-info" tj:object="${session.loginMember}">
+              <div class="my-info" th:object="${session.loginMember}">
                 
                 <div>
                   <a href="#" id="nickname" th:text="*{memberNickname}">닉네임</a>
@@ -101,8 +101,7 @@
               </div>
 
             </article>
-            </th:block>
-          
+          </th:block>
 
       </section>
 
@@ -113,6 +112,6 @@
   <th:block th:replace="~{common/footer}"></th:block>
 
   <!-- script 추가-->
-   <script src="/js/main.js"></script>
+  <script src="/js/main.js"></script>
 </body>
 </html>

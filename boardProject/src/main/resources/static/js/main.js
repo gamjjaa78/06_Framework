@@ -34,9 +34,9 @@ const getCookie = (key) => {
 
 
 //이메일 작성 input 태그요소
-const loginEmail=document.querySelector("#loginFrom input[name='memberEmail']");
+const loginEmail=document.querySelector("#loginForm input[name='memberEmail']");
 
-if(loginEmail !=undefined) { //로그인창의 이메일 input 태그가 화면상에 존재할때
+if(loginEmail != undefined) { //로그인창의 이메일 input 태그가 화면상에 존재할때
                         //로그인이 안돼있는 화면
     //쿠키 중 key 값이 "saveId"인 쿠키의 value 얻어오기
     const saveId=getCookie("saveId"); //이메일 또는 undefined 
