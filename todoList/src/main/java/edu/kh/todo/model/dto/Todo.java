@@ -5,15 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Data // Getter + Setter + toString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Todo {
-	private int todoNo;
-	private String todoTitle;
-	private String todoContent;
-	private String complete;
-	private String regDate;
+	private int todoNo; 		// 할 일 번호 (TODO_NO)
+	private String todoTitle; 	// 할 일 제목 (TODO_TITLE)
+	private String todoContent; // 할 일 내용 (TODO_CONTENT)
+	private String complete;    // 할 일 완료여부 (COMPLETE "Y"/"N") 
+	private String regDate;  	// 할 일 등록일(REG_DATE)
+	
 	
 }

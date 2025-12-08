@@ -24,12 +24,6 @@ import lombok.extern.slf4j.Slf4j;
  *   key값이 일치하는 속성을 session scope로 변경
  * 
  * */
-/**
- * 
- */
-/**
- * 
- */
 @SessionAttributes({"loginMember"})
 @Controller
 @RequestMapping("member")
@@ -125,7 +119,8 @@ public class MemberController {
 		
 	}
 	
-	/**회원가입페이지로 이동
+	
+	/** 회원 가입 페이지로 이동
 	 * @return
 	 */
 	@GetMapping("signup")
@@ -134,27 +129,28 @@ public class MemberController {
 	}
 	
 	
-	/**이메일 중복검사 (비동기 요청)
+	/** 이메일 중복검사 (비동기 요청)
 	 * @return
 	 */
-	@ResponseBody //응답 본문으로 응답값을 돌려보냄
-	@GetMapping("checkEmail") //GET 방식 /member/checkEmail 요청
+	@ResponseBody // 응답 본문으로 응답값을 돌려보냄
+	@GetMapping("checkEmail")  // GET 방식 /member/checkEmail 요청 매핑
 	public int checkEmail(@RequestParam("memberEmail") String memberEmail) {
 		return service.checkEmail(memberEmail);
-		
 	}
 	
-	/**닉네임 중복검사
+	/** 닉네임 중복 검사 
 	 * @param memberNickname
 	 * @return 중복 1, 아님 0
 	 */
-	@ResponseBody
+	@ResponseBody 
 	@GetMapping("checkNickname")
-	public int checkMickname(@RequestParam("memberNickname") String memberNickname) {
+	public int checkNickname(@RequestParam("memberNickname") String memberNickname) {
 		return service.checkNickname(memberNickname);
-		
-		
 	}
+	
+	
+	
+	
 	
 	
 
