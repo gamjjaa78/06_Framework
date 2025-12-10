@@ -1,5 +1,7 @@
 package edu.kh.project.myPage.model.mapper;
 
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import edu.kh.project.member.model.dto.Member;
@@ -7,14 +9,27 @@ import edu.kh.project.member.model.dto.Member;
 @Mapper
 public interface MyPageMapper {
 
-	/**회원정보수정 SQL
+	/** 회원 정보 수정 SQL 
 	 * @param inputMember
 	 * @return
 	 */
 	int updateInfo(Member inputMember);
 
-	String checkPw(int memberNo);
+	/** 회원의 암호화된 비밀번호 조회
+	 * @param memberNo 
+	 * @return 암호화된 비밀번호
+	 */
+	String selectPw(int memberNo);
 
-	int updatePw(Member loginMember);
+	/** 비밀번호 변경
+	 * @param paramMap
+	 * @return result 
+	 */
+	int changePw(Map<String, Object> paramMap);
 
+	/** 회원 탈퇴 SQL (update)
+	 * @param memberNo
+	 * @return
+	 */
+	int secession(int memberNo);
 }

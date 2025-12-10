@@ -46,8 +46,9 @@ public class MemberServiceImpl implements MemberService {
 		//					일치한다고 판단이 되면 true , 아니면 false
 		
 		// 일치하지 않으면
-		if(!bcrypt.matches(inputMember.getMemberPw(), 
-						loginMember.getMemberPw())) return null;
+		if(!bcrypt.matches(inputMember.getMemberPw(),loginMember.getMemberPw())) {
+			 return null;
+		}
 		
 		// 로그인한 회원 정보에서 비밀번호 제거
 		loginMember.setMemberPw(null);
