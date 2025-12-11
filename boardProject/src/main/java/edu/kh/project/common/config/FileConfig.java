@@ -10,12 +10,14 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import edu.kh.project.BoardProjectApplication;
 import jakarta.servlet.MultipartConfigElement;
 
 @Configuration
 @PropertySource("classpath:/config.properties")
 public class FileConfig implements WebMvcConfigurer {
+
+    private final BoardProjectApplication boardProjectApplication;
 	//WebMvcConfigurer Spring MVC 프레임워크에서 제공하는 인터페이스 중 하나
 	//스프링 구성을 커스터마이징하고 확장하기 위한 메서드 제공
 	//주로 웹 앱의 설정을 조정, 추가하는데 사용됨
@@ -37,6 +39,22 @@ public class FileConfig implements WebMvcConfigurer {
 	@Value("${spring.servlet.multipart.max-file-size}")
 	private long maxFileSize; //10485760
 	
+	//----------------------------------------------
+	//프로필 이미지 관련 경로
+	@Value("${my.profile.resource-handler}")
+	private String profileResourceHandler;
+	//  /myPage/profile/**
+	
+	@Value("${my.profile.resource-location}")
+	private String profileResourceLocation;
+
+    FileConfig(BoardProjectApplication boardProjectApplication) {
+        this.boardProjectApplication = boardProjectApplication;
+    }
+	//  file:///C:/uploadFiles/profile/
+	
+	
+	
 	//요청 주소에 따라
 	//서버 컴퓨터의 어떤 경로에 접근할지 설정	
 	@Override
@@ -49,6 +67,11 @@ public class FileConfig implements WebMvcConfigurer {
 		.addResourceLocations("file:///C:/uploadFiles/test");
 		//클라가 /myPage/file/** 패턴으로 이미지 요청할떄 서버 폴더 경로 중
 		//     C:/uploadFiles/test/ 연결하겠댜
+	
+		registry.addResourceHandler(profileResourceHandler);
+		registry.addResourceHandler(profileResourceLocation);
+		//클라가 /myPage/profile/** 패턴으로 이미지 요청할때
+		//서버 폴더 경로 중 C:/uploadFiles/profile/ 로 연결
 		
 	}
 	
