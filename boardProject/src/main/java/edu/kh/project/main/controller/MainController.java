@@ -8,16 +8,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class MainController {
 	
-	@RequestMapping("/")
+	@RequestMapping("/") // "/" 요청 매핑
 	public String mainPage() {
-		return "common/main"; //forward
+		
+		// 접두사/접미사 제외
+		// classpath:/templates/
+		// .html
+		return "common/main"; // forward
 	}
-
-	//LoginFilter에서 로그인하지 않았을때 리다이렉트로 요청
+	
+	// LoginFilter 에서 로그인하지 않았을때 리다이렉트로 요청
 	@GetMapping("loginError")
 	public String loginError(RedirectAttributes ra) {
-		ra.addAttribute("message", "로긴 후 이용해");
+		ra.addFlashAttribute("message", "로그인 후 이용해주세요~");
 		return "redirect:/";
 	}
+	
+	
 	
 }

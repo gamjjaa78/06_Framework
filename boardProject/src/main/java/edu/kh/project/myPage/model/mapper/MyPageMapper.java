@@ -35,22 +35,26 @@ public interface MyPageMapper {
 	 */
 	int secession(int memberNo);
 
-	/**파일정보를 DB에 삽입하는 SQL (insert)
+	/** 파일 정보를 DB에 삽입 SQL (insert)
+	 * @param uf
 	 * @return
 	 */
 	int insertUploadFile(UploadFile uf);
 
-	/**파일 목록 조회 SQL
+	/** 파일 목록 조회하는 SQL
 	 * @param memberNo
 	 * @return
 	 */
 	List<UploadFile> fileList(int memberNo);
 
-	/**프로필 이미지 변경 SQL
+	/** 프로필 이미지 변경 SQL
 	 * @param member
 	 * @return
 	 */
 	int profile(Member member);
+	
+	
+	
 	
 	
 }

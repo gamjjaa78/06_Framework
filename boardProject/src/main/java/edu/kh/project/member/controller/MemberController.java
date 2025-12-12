@@ -149,40 +149,47 @@ public class MemberController {
 		return service.checkNickname(memberNickname);
 	}
 	
-	/**회원가입
-	 * @param inputMember 커맨드객체(입력된 회원정보)
-	 * 			memberEmail,memberPw,memberNickname,memberTel
-	 * 			(memberAddress도, 필요는 없음)
-	 * @param memberAddress 입력한 주소 input 3개의 값을 배열로 전달
-	 * 			[우편번호, 도로명/지번주소, 상세주소]
-	 * @param ra RedirectAttributes로 리다이렉트시 1회성으로 req->session->req로 전달되는 객체
+	
+	/** 회원 가입
+	 * @param inputMember : 커맨드 객체(입력된 회원 정보)
+	 * 						memberEmail, memberPw, memberNickname, memberTel
+	 * 						(memberAddress도 우편번호-필요는 없음)
+	 * @param memberAddress : 입력한 주소 input 3개의 값을 배열로 전달
+	 * 						[우편번호, 도로명/지번주소, 상세주소]
+	 * @param ra : RedirectAttributes로 리다이렉트 시 1회성으로 req->session->req
+	 * 				로 전달되는 객체
 	 * @return
 	 */
 	@PostMapping("signup")
-	public String signup(@ModelAttribute Member inputMember,
-			@RequestParam("memberAddress") String[] memberAddress,
-			RedirectAttributes ra) {
-		//회원가입 서비스 호출
-		int result=service.signup(inputMember, memberAddress);
+	public String signup(@ModelAttribute Member inputMember, 
+						@RequestParam("memberAddress") String[] memberAddress, 
+						RedirectAttributes ra) {
 		
-		String path=null;
-		String message=null;
+		// 회원 가입 서비스 호출
+		int result = service.signup(inputMember, memberAddress);
 		
-		if(result > 0) { //성공시
-			message=inputMember.getMemberNickname()+"님의 가입 환영!!";
-			path="/";
-		} else { //실패시
-			message="가입실패여";
-			path="signup";
+		String path = null;
+		String message = null;
+		
+		if(result > 0) { // 성공 시
+			message = inputMember.getMemberNickname() 
+						+ "님의 가입을 환영합니다!";
+			
+			path = "/";
+			
+		} else { // 실패 시
+			message = "회원 가입 실패...";
+			path = "signup";
+			
 		}
 		
 		ra.addFlashAttribute("message", message);
 		
-		return "redirect:"+path;
-		//성공시 redirect:/ 메인페이지 재요청
-		//실패시 redirect:signup 상대경로
-		//현재주소 /member/signup
-		//목표경로 /member/signup (Get 방식 요청)
+		return "redirect:" + path;
+		// 성공시 -> redirect:/ (메인페이지 재요청)
+		// 실패시 -> redirect:signup (상대경로)
+		// 현재주소 : /member/signup 
+		// 목표경로 : /member/signup (Get 방식 요청)
 	}
 	
 	
