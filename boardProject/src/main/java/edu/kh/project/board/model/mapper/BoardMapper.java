@@ -20,7 +20,7 @@ public interface BoardMapper {
 	 * @param boardCode
 	 * @return
 	 */
-	int gelListCount(int boardCode);
+	int getListCount(int boardCode);
 
 	/**특정 게시판의 지정된 페이지 목록 조회 SQL 수행
 	 * @param boardCode
@@ -28,5 +28,24 @@ public interface BoardMapper {
 	 * @return
 	 */
 	List<Board> selectBoardList(int boardCode, RowBounds rowBounds);
+
+	/**검색 조건이 맞는 게시글 수 조회 SQL 수행
+	 * @param paramMap
+	 * @return
+	 */
+	int getSearchCount(Map<String, Object> paramMap);
+
+	/**검색 결과 목록 조회 SQL 수행
+	 * @param paramMap
+	 * @param rowBounds
+	 * @return
+	 */
+	List<Board> selectSearchList(Map<String, Object> paramMap, RowBounds rowBounds);
+
+	/**게시글 상제 조회 SQL 수행
+	 * @param map
+	 * @return
+	 */
+	Board selectOne(Map<String, Integer> map);
 	
 }
