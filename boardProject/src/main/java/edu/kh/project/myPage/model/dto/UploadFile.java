@@ -21,3 +21,6 @@ public class UploadFile {
 	private String memberNickname;
 	
 }
+
+
+
