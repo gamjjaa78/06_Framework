@@ -623,6 +623,22 @@ END;
 SELECT NEXT_IMG_NO() FROM DUAL;
 
 
+INSERT INTO  "BOARD_IMG"
+(
+			SELECT NEXT_IMG_NO(), '경로1', '원본1', '변경1',
+			1, 2000 FROM DUAL
+			UNION
+			SELECT NEXT_IMG_NO(), '경로2', '원본2', '변경2',
+			1, 2000 FROM DUAL
+			UNION
+			SELECT NEXT_IMG_NO(), '경로1', '원본1', '변경1',
+			1, 2000 FROM DUAL
+		)
+
+
+
+
+
 ----------------------------------------------------------
 /* 채팅 */
 CREATE TABLE "CHATTING_ROOM" (
