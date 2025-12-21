@@ -1,9 +1,9 @@
-
 package edu.kh.project.board.model.service;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,15 +124,17 @@ public class EditBoardServiceImpl implements EditBoardService {
 	// 게시글 수정 서비스
 	@Override
 	public int boardUpdate(Board inputBoard, List<MultipartFile> images, String deleteOrderList) throws Exception {
-		// 1.게시글 부분(제목/내용) 수정
+
+		// 1. 게시글 부분(제목/내용) 수정
 		int result = mapper.boardUpdate(inputBoard);
 
-		// 수정 실패시 바로 리턴
+		// 수정 실패 시 바로 리턴
 		if (result == 0)
 			return 0;
 
-		// 2.기존 0->삭제된 이미지(deleteOrderList)가 있는 경우
+		// 2. 기존 O -> 삭제된 이미지(deleteOrderList)가 있는 경우
 		if (deleteOrderList != null && !deleteOrderList.equals("")) {
+
 			Map<String, Object> map = new HashMap<>();
 			map.put("deleteOrderList", deleteOrderList);
 			map.put("boardNo", inputBoard.getBoardNo());
@@ -140,13 +142,22 @@ public class EditBoardServiceImpl implements EditBoardService {
 			// BOARD_IMG 에 존재하는 행을 삭제하는 SQL 호출
 			result = mapper.deleteImage(map);
 
-			// 삭제 실패한 경우-롤백
+			// 삭제 실패한 경우 -> 롤백
 			if (result == 0) {
 				throw new RuntimeException();
-				// 모두 삭제안됐을때			
+			}
+			
+			// deleteOrderList에 담긴 삭제된 갯수가 삭제 성공한 행의 갯수와 다를때
+			List<String> orderList = Arrays.asList(deleteOrderList.split(","));
+
+			if(result != orderList.size() ) {
+				throw new RuntimeException(); // 마찬가지로 롤백
+			}
 		}
-		}
-		// 3.선택한 파일이 존재할 경우(클라이언트가 실제로 업로드한 이미지가 있는 경우)
+
+		// 3. 선택한 파일이 존재할 경우
+		// (클라이언트가 실제로 업로드한 이미지가 있는 경우)
+
 		// 실제 업로드된 이미지만 모아둘 List 생성
 		List<BoardImg> uploadList = new ArrayList<>();
 
@@ -163,46 +174,56 @@ public class EditBoardServiceImpl implements EditBoardService {
 				String rename = Utility.fileRename(originalName);
 
 				// 모든 값을 저장할 BoardImg DTO로 객체 생성
-				BoardImg img = BoardImg.builder().imgOriginalName(originalName).imgRename(rename).imgPath(webPath)
-						.boardNo(inputBoard.getBoardNo()).imgOrder(i).uploadFile(images.get(i)).build();
+				BoardImg img = BoardImg.builder()
+						.imgOriginalName(originalName)
+						.imgRename(rename)
+						.imgPath(webPath)
+						.boardNo(inputBoard.getBoardNo())
+						.imgOrder(i)
+						.uploadFile(images.get(i)).build();
 
 				// uploadList에 추가
 				uploadList.add(img);
 
-				// 4.업로드하려는 이미지정보(img) 이용해서 수정 또는 삽입 수행
-				// 1)기존 ㅇ->새 이미지로 변경->수정
+				// 4. 업로드 하려는 이미지 정보(img) 이용해서
+				// 수정 또는 삽입 수행
+
+				// 1) 기존 O -> 새 이미지로 변경 -> 수정
 				result = mapper.updateImage(img);
 
 				if (result == 0) {
-					// 수정실패==기존 해당 순서(IMG_ODRER)에 이미지 없었음
-					// ->삽입 수행
+					// 수정 실패 == 기존 해당 순서(IMG_ORDER)에 이미지가 없었음
+					// -> 삽입 수행
 
-					// 2)기존 x-> 새 이미지 추가
+					// 2) 기존 X -> 새 이미지 추가
 					result = mapper.insertImage(img);
+
 				}
 			}
 
-			// 수정 또는 삽입 실패시
+			// 수정 또는 삽입이 실패한 경우
 			if (result == 0) {
 				throw new RuntimeException(); // 롤백
 			}
+
 		}
 
+		// 선택한 파일이 없을 경우
 		if (uploadList.isEmpty()) {
 			return result;
 		}
 
 		// 수정, 새 이미지 파일을 서버에 저장
 		for (BoardImg img : uploadList) {
-			img.getUploadFile().transferTo(new File(folderPath+img.getImgRename()));
+			img.getUploadFile().transferTo(new File(folderPath + img.getImgRename()));
 		}
 
 		return result;
 	}
-	
-	@Override
-	public int boardDelete(Board inputBoard) {
 
-		return mapper.boardDelete(inputBoard);
+	// 게시글 삭제
+	@Override
+	public int boardDelete(Map<String, Integer> map) {
+		return mapper.boardDelete(map);
 	}
 }

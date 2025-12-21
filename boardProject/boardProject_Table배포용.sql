@@ -623,22 +623,6 @@ END;
 SELECT NEXT_IMG_NO() FROM DUAL;
 
 
-INSERT INTO  "BOARD_IMG"
-(
-			SELECT NEXT_IMG_NO(), '경로1', '원본1', '변경1',
-			1, 2000 FROM DUAL
-			UNION
-			SELECT NEXT_IMG_NO(), '경로2', '원본2', '변경2',
-			1, 2000 FROM DUAL
-			UNION
-			SELECT NEXT_IMG_NO(), '경로1', '원본1', '변경1',
-			1, 2000 FROM DUAL
-		)
-
-
-
-
-
 ----------------------------------------------------------
 /* 채팅 */
 CREATE TABLE "CHATTING_ROOM" (
@@ -755,3 +739,18 @@ OR PARTICIPANT = 1
 ORDER BY MAX_MESSAGE_NO DESC NULLS LAST;
 
 SELECT * FROM MEMBER;
+---------------------------------------------------------------------
+BEGIN
+  -- 테이블 삭제
+  FOR t IN (SELECT table_name FROM user_tables) LOOP
+    EXECUTE IMMEDIATE 'DROP TABLE ' || t.table_name || ' CASCADE CONSTRAINTS';
+  END LOOP;
+
+  -- 시퀀스 삭제
+  FOR s IN (SELECT sequence_name FROM user_sequences) LOOP
+    EXECUTE IMMEDIATE 'DROP SEQUENCE ' || s.sequence_name;
+  END LOOP;
+END;
+
+SELECT * FROM user_tables;
+SELECT * FROM user_sequences;
