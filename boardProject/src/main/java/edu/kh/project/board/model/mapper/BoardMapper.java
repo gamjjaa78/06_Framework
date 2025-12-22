@@ -11,8 +11,6 @@ import edu.kh.project.board.model.dto.Board;
 @Mapper
 public interface BoardMapper {
 
-	
-
 	/** 게시판 종류 조회 SQL 수행
 	 * @return
 	 */
@@ -80,11 +78,13 @@ public interface BoardMapper {
 	 */
 	int selectLikeCount(int boardNo);
 
-	
-	/**DB 이미지 파일명 목록 조회
-	 * 
+	/** DB 이미지 파일명 목록 조회 
+	 * @return
 	 */
 	List<String> selectDbImageList();
+
+	
+	
 	
 	
 	

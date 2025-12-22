@@ -13,81 +13,78 @@ import edu.kh.project.board.model.service.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Component //IOC 관련, Bean 등록
+@Component // IOC 관련 : Bean 등록
 @Slf4j
 @PropertySource("classpath:/config.properties")
 @RequiredArgsConstructor
-public class imageDeleteScheduling {
+public class ImageDeleteScheduling {
 	
 	private final BoardService service;
 	
 	@Value("${my.profile.folder-path}")
 	private String profileFolderPath; // C:/uploadFiles/profile/
-
+	
 	@Value("${my.board.folder-path}")
 	private String boardFolderPath; // C:/uploadFiles/board/
 	
-	//@Scheduled(cron = "0,30 * * * * *") //시계초단위가 0,30인 경우 수행
-	//@Scheduled(cron = "0 0 * * * *") //매시간
-	//@Scheduled(cron = "0 0 0 * * *") //자정
-	//@Scheduled(cron = "0 0 12 * * *") //정오
-	//@Scheduled(cron = "0 0 0 1 * *") //매달 1일
+	//@Scheduled(cron = "0,30 * * * * *") // 시계 초 단위가 0,30 인 경우 수행
+	//@Scheduled(cron = "0 0 * * * *") // 매 시간마다 수행
+	//@Scheduled(cron = "0 0 0 * * *") // 자정
+	//@Scheduled(cron = "0 0 12 * * *") // 정오
+	//@Scheduled(cron = "0 0 0 1 * *") // 매달 1일
 	
 	@Scheduled(cron = "0 0 0 1 * *")
 	public void scheduling() {
 		log.info("스케줄러 동작!");
-		//DB, 서버 폴더의 파일 목록 비교 후 DB에 없는 서버 이미지 파일 삭제 동작
+		// DB, 서버 폴더의 파일 목록 비교 후
+		// DB에 없는 서버 이미지 파일 삭제 동작
 		
-		//1.서버 폴더의 파일 목록 조회하기
-		File boardFolder=new File(boardFolderPath);
-		File memberFolder=new File(profileFolderPath);
+		// 1. 서버 폴더의 파일 목록 조회하기
+		File boardFolder = new File(boardFolderPath);
+		File memberFolder = new File(profileFolderPath);
 		
-		//참조하는 폴더에 존재하는 파일 목록 얻어오기
-		File[] boardArr=boardFolder.listFiles();
-		File[] memberArr=memberFolder.listFiles();
+		// 참조하는 폴더에 존재하는 파일 목록 얻어오기
+		File[] boardArr = boardFolder.listFiles();
+		File[] memberArr = memberFolder.listFiles();
 		
-		//두 배열을 하나로 합침
-		//imageArr 라는 빈 배열을 boardArr과 memberArr의 길이만큼의 크기로 만들기
-		File[] imageArr=new File[boardArr.length+memberArr.length];
+		// 두 배열을 하나로 합침
+		// imageArr 라는 빈 배열을 boardArr과 memberArr의 길이 만큼의 크기로 만들기
+		File[] imageArr = new File[boardArr.length + memberArr.length];
 		
-		//배열 내용 복사(깊은 복사)
-		//System.arraycopy(복사할배열,몇번인덱스부터복사할지,
+		// 배열 내용 복사(깊은 복사)
+		// System.arraycopy(복사할배열, 몇번인덱스부터복사할지,
 		//	새로운배열, 새로운배열의몇번부터넣을지인덱스, 복사를어디까지할건지)
 		System.arraycopy(memberArr, 0, imageArr, 0, memberArr.length);
 		System.arraycopy(boardArr, 0, imageArr, memberArr.length, boardArr.length);
 		
-		//배열->List 변환(다루기 쉽도록)
-		List<File> serverImageList=Arrays.asList(imageArr);
+		// 배열 -> List 변환(다루기 쉽도록)
+		List<File> serverImageList = Arrays.asList(imageArr);
 		
-		//2.DB 이미지 파일 이름만 모두 조회
-		List<String> dbImageList=service.selectDbImageList();
+		// 2. DB 이미지 파일 이름만 모두 조회
+		List<String> dbImageList = service.selectDbImageList();
 		
-		//3.서버, DB 이미지 파일명을 비교하여
-		//서버에만 있고, DB에 없는 파일을 서버에서 삭제
-		if(!serverImageList.isEmpty()) { //서버에 이미지 있을 경우
+		// 3. 서버, DB 이미지 파일명을 비교하여
+		// 서버에만 있고, DB에 없는 파일을 서버에서 삭제
+		
+		if(!serverImageList.isEmpty()) { // 서버에 이미지가 있을 경우
 			
-			for(File serverImage:serverImageList) {
+			for(File serverImage : serverImageList) {
 				
-				//File.getName():서버 파일 이름
-				//List.inderOf(객체):
-				//List에 전달한 객체가 존재하면 존재하는 index 반환
-				//존재하지 않는다면 -1 반환하는 메서드
-				if(dbImageList.indexOf(serverImage.getName()) == -1) {
-					serverImage.delete();//파일삭제
-					log.info(serverImage.getName()+"삭제");
+				// File.getName() : 서버 파일 이름
+				// List.indexOf(객체) : 
+				// List에 전달한 객체가 존재하면 존재하는 index 반환
+				// 존재하지 않으면 -1 반환하는 메서드
+				if(dbImageList.indexOf( serverImage.getName() ) == -1) {
+					serverImage.delete(); // 파일 삭제
+					log.info(serverImage.getName() + " 삭제");
 				}
-				
 			}
-			
+						
 		}
-		
-		
+				
 	}
-	
-	
-	
-}
 
+}
 
 /*
 * @Scheduled
@@ -98,21 +95,26 @@ public class imageDeleteScheduling {
 * 1) XXXAPPlication.java 파일에 @EnableScheduling 어노테이션 추가
 * 2) 스케쥴링 동작을 위한 클래스 작성
 *
+*
 * @Scheduled 속성
 *  - fixedDelay : 이전 작업이 끝난 시점으로 부터 고정된 시간(ms)을 설정.
 *    @Scheduled(fixedDelay = 10000) // 이전 작업이 끝난 후 10초 뒤에 실행
 *  
 *  - fixedRate : 이전 작업이 수행되기 시작한 시점으로 부터 고정된 시간(ms)을 설정.
 *    @Scheduled(fixedRate  = 10000) // 이전 작업이 시작된 후 10초 뒤에 실행
+* 
 *  
-* * cron 속성 : UNIX계열 잡 스케쥴러 표현식으로 작성
-* - cron="초 분 시 일 월 요일 [년도]"
+*  
+* * cron 속성 : UNIX계열 잡 스케쥴러 표현식으로 작성 
+* - cron="초 분 시 일 월 요일 [년도]" 
 * - 요일 : 1(SUN) ~ 7(SAT)
-* ex) 2019년 9월 16일 월요일 10시 30분 20초
+* ex) 2019년 9월 16일 월요일 10시 30분 20초 
 * cron="20 30 10 16 9 2 " // 연도 생략 가능
+*
 *
 *  @Scheduled(cron = "* * * * * 30")
 *  @Scheduled(cron = "0 0 12 * * *")
+*
 *
 * - 특수문자
 * * : 모든 수.
