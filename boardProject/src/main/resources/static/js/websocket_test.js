@@ -1,0 +1,23 @@
+//웹소켓 테스트
+
+//1.ScokJS 라이브러리 추가
+//->common.html 추가해둠
+
+//2.SockJS 객체 생성
+const testSock=new SockJS("/testSock");
+//WebSocket 통신을 할 수 있게끔 해주는
+//객체를 생성함과 동시에 자동으로
+// http://localhost/testSock으로 연결요청보냄
+
+//3.생성된 sockJS 객체를 이용해서 서버에 메시지 전달
+const sendMessageFn=(name,str)=>{
+    //JSON을 이용해 데이터를 TEXT 형태로 전달
+    const obj={
+        "name":name,
+        "str":str
+    }
+
+    testSock.send(JSON.stringify(obj));
+}
+
+//sendMessageFn=("홍길동","안녕")
