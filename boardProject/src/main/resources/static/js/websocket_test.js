@@ -16,8 +16,15 @@ const sendMessageFn=(name,str)=>{
         "name":name,
         "str":str
     }
-
     testSock.send(JSON.stringify(obj));
 }
 
 //sendMessageFn=("홍길동","안녕")
+
+//4.서버로부터 클라에게
+//웹소켓을 이용한 메시지가 전달된 경우
+testSock.addEventListener("message", e=>{
+    //e.data:서버로부터 전달받은 message
+    const msg=JSON.parse(e.data); //JSON->JS 객체
+    console.log(`${msg.name}의 메시지:${msg.str}`);
+});
