@@ -51,4 +51,36 @@ public class AdminController {
 					.body("로그아웃 중 예외발생"+e.getMessage());
 		}
 	}
+	
+	/**관리자 계정 발급
+	 * @return
+	 */
+	@PostMapping("createAdminAccount")
+	public ResponseEntity<String> createAdminAccount(@RequestBody Member member) {
+		try {
+			//1. 이메일 중복검사
+			int checkEmail=service.checkEmail(member.getMemberEmail());
+			
+			//2. 중복시 발급안함
+			if(checkEmail>0) {
+				//HttpStatus.CONFLICT 요청이 서버의 현재 상태와 충돌시 사용
+				//==이미 존재하는 리소스(email) 때문에 새 리소스 못 만듦
+				return ResponseEntity.status(HttpStatus.CONFLICT) //409
+						.body("이미 사용중인 이메일");
+			}
+			
+			//3. 없음 새로 발급->비번 반환
+			String accountPw=service.createAdminAccount(member);
+			
+			//HttpStatus.OK (200) 요청이 정상적으로 처리됐으나 기존 리소스에 대한 단순 처리
+			//HttpStatus.CREATED(201) 자원이 성공적으로 생성됐음을 나타냄
+			return ResponseEntity.status(HttpStatus.CREATED).body(accountPw);
+			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) //500
+					.body("관리자 계정 생성 중 문제발생, 서버문의요청");
+		}
+	}
+	
+	
 }

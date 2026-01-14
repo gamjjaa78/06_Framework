@@ -12,9 +12,28 @@
 		AND MEMBER_DEL_FL='N'
 	</select>
 	
+	<!-- 관리자 이메일 중복 검사 -->
+	<select id="checkEmail">
+		SELECT COUNT(*) FROM ""MEMBER""
+		WHERE MEMBER_EMAIL=#{memberEmail}
+		AND AUTHORITY=2
+	</select>
+
+	<!-- 관리자 계정 발급 -->	
+	<insert id="createAdminAccount">
+		INSERT INTO "MEMBER"
+		VALUES(SEQ_MEMBER_NO.NEXTVAL,
+			 #{memberEmail},
+			 #{memberPw},
+			 #{memberNickname},
+			 #{memberTel},
+			 NULL,
+			 DEFAULT,
+			 DEFAULT,
+			 2
+)
 	
-	
-	
+	</insert>
 
 
 </mapper>
