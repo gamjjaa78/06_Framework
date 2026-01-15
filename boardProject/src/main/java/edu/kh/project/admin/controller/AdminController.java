@@ -1,5 +1,7 @@
 package edu.kh.project.admin.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -15,72 +17,133 @@ import edu.kh.project.admin.model.service.AdminService;
 import edu.kh.project.member.model.dto.Member;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
-@RestController // 비동기
+
+@RestController
 @CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("admin")
 @RequiredArgsConstructor
-@SessionAttributes({ "loginMember" })
+@SessionAttributes({"loginMember"})
 public class AdminController {
-
+	
 	private final AdminService service;
-
+	
 	@PostMapping("login")
 	public Member login(@RequestBody Member inputMember, Model model) {
+		
 		Member loginMember = service.login(inputMember);
-		if (loginMember == null)
-			return null;
-
+		
+		if(loginMember == null) return null;
+		
 		model.addAttribute("loginMember", loginMember);
 		return loginMember;
-	}
-
-	@GetMapping("logout")
-	public ResponseEntity<String> logout(HttpSession session) {
-		//ResponseEntity
-		//Spring에서 제공하는 Http 응답 데이터를 커스터마이징 할 수 있또록 지원하는 클래스
-		//Http 상태코드, 헤더, 응답 본문(body)을 모두 설정 가능
 		
-		try {
-			session.invalidate(); //세션 무효화 처리
-			return ResponseEntity.status(HttpStatus.OK)
-					.body("로그아웃 완료");
-
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) //500
-					.body("로그아웃 중 예외발생"+e.getMessage());
-		}
 	}
 	
-	/**관리자 계정 발급
+	@GetMapping("logout")
+	public ResponseEntity<String> logout(HttpSession session) {
+		// ResponseEntity 
+		// Spring에서 제공하는 Http 응답 데이터를
+		// 커스터마이징 할 수 있도록 지원하는 클래스
+		// -> Http 상태코드, 헤더, 응답 본문(body)을 모두 설정 가능
+		try {
+			session.invalidate(); // 세션 무효화 처리
+			return ResponseEntity.status(HttpStatus.OK) // 200
+					.body("로그아웃이 완료되었습니다");
+			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+					.body("로그아웃 중 예외 발생 : " + e.getMessage());
+		}
+		
+	}
+	
+	/** 관리자 계정 발급
 	 * @return
 	 */
 	@PostMapping("createAdminAccount")
 	public ResponseEntity<String> createAdminAccount(@RequestBody Member member) {
 		try {
-			//1. 이메일 중복검사
-			int checkEmail=service.checkEmail(member.getMemberEmail());
+			// 1. 기존에 있는 이메일인지 검사
+			int checkEmail = service.checkEmail(member.getMemberEmail());
 			
-			//2. 중복시 발급안함
-			if(checkEmail>0) {
-				//HttpStatus.CONFLICT 요청이 서버의 현재 상태와 충돌시 사용
-				//==이미 존재하는 리소스(email) 때문에 새 리소스 못 만듦
-				return ResponseEntity.status(HttpStatus.CONFLICT) //409
-						.body("이미 사용중인 이메일");
+			// 2. 있으면 발급 안함
+			if(checkEmail > 0) {
+				// HttpStatus.CONFLICT (409) : 요청이 서버의 현재 상태와 충돌할 때 사용
+				// == 이미 존재하는 리소스(email) 때문에 새로운 리소스를 만들 수 없다.
+				return ResponseEntity.status(HttpStatus.CONFLICT)
+						.body("이미 사용중인 이메일입니다.");
 			}
 			
-			//3. 없음 새로 발급->비번 반환
-			String accountPw=service.createAdminAccount(member);
+			// 3. 없으면 새로 발급 -> 비밀번호 반환
+			String accountPw = service.createAdminAccount(member);
 			
-			//HttpStatus.OK (200) 요청이 정상적으로 처리됐으나 기존 리소스에 대한 단순 처리
-			//HttpStatus.CREATED(201) 자원이 성공적으로 생성됐음을 나타냄
+			// HttpStatus.OK (200) : 요청이 정상적으로 처리되었으나 기존 리소스에 대한 단순 처리
+			// HttpStatus.CREATED (201) : 자원이 성공적으로 생성되었음을 나타냄
 			return ResponseEntity.status(HttpStatus.CREATED).body(accountPw);
 			
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) //500
-					.body("관리자 계정 생성 중 문제발생, 서버문의요청");
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
+					.body("관리자 계정 생성 중 문제 발생(서버 문의 바람)");
 		}
 	}
+	
+	/** 관리자 계정 목록 조회
+	 * @return
+	 */
+	@GetMapping("adminAccountList")
+	public ResponseEntity<Object> adminAccountList() {
+		try {
+			List<Member> adminList = service.adminAccountList();
+			return ResponseEntity.status(HttpStatus.OK).body(adminList);
+			
+		}catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(null);
+		}
+	}
+	
+	/**탈퇴 회원 리스트 조회
+	 * @return
+	 */
+	@GetMapping("withdrawMemberList")
+	public ResponseEntity<Object> selectWithdrawMemnerList(){
+		//성공시 List<Member> 반환, 에러 발생했을때 String->Object
+		try {
+			List<Member> withdrawMemberList=service.selectWithdrawMemberList();
+			return ResponseEntity.status(HttpStatus.OK).body(withdrawMemberList);
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("탈퇴한 회원 목록 조회 중 문제 발생 : " + e.getMessage());
+		}
+		
+	}
+	
+	@PutMapping("restoreMember")
+	public ResponseEntity<String> restoreMember(@RequestBody Member member) {
+		try {
+			int result=service.restoreMember(member.getMemberNo());
+			
+			if(result > 0) {
+				return ResponseEntity.status(HttpStatus.OK)
+						.body(member.getMemberNo()+"번 회원 복구 완료");
+			} else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("유효하지 않은 memberNo:"+member.getMemberNo());
+			}
+			
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("탈퇴회원 복구 중 문제발생 : " + e.getMessage());
+		}
+		
+	}
+	
+	
+	
+	
 	
 	
 }
