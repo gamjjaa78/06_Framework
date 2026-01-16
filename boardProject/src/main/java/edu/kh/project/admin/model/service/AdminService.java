@@ -2,6 +2,7 @@ package edu.kh.project.admin.model.service;
 
 import java.util.List;
 
+import edu.kh.project.board.model.dto.Board;
 import edu.kh.project.member.model.dto.Member;
 
 public interface AdminService {
@@ -14,7 +15,9 @@ public interface AdminService {
 
 	List<Member> adminAccountList();
 
-	List<Member> selectWithdrawMemberList();
+	Board maxReadCount();
+
+	List<Member> selectWithdrawnMemberList();
 
 	int restoreMember(int memberNo);
 

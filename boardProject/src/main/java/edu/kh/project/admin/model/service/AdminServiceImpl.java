@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.kh.project.admin.model.mapper.AdminMapper;
+import edu.kh.project.board.model.dto.Board;
 import edu.kh.project.common.util.Utility;
 import edu.kh.project.member.model.dto.Member;
 import lombok.RequiredArgsConstructor;
@@ -71,13 +72,19 @@ public class AdminServiceImpl implements AdminService{
 	}
 	
 	@Override
-	public List<Member> selectWithdrawMemberList() {
-		return mapper.selectWithdrawMemberList();
+	public Board maxReadCount() {
+		return mapper.maxReadCount();
+	}
+	
+	@Override
+	public List<Member> selectWithdrawnMemberList() {
+		return mapper.selectWithdrawnMemberList();
 	}
 	
 	@Override
 	public int restoreMember(int memberNo) {
-		return mapper.restoreMember();
+		return mapper.restoreMember(memberNo);
 	}
+	
 	
 }
